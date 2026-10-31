@@ -1,0 +1,34 @@
+# build outputs
+bin/
+obj/
+.vs/
+TestResults/
+*.user
+*.suo
+
+# local publish output (binaries are not committed)
+publish/
+
+# runtime data
+settings.json
+history.json
+crash.log
+*.log
+
+# preview / test data
+.preview-data/
+.test-data/
+.publish-test-data/
+.*-test-data/
+
+# dev scratch
+tools/preview/
+tools/publish-preview/
+tools/live.png
+tools/crop-*.png
+
+# editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

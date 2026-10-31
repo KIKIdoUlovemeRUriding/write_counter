@@ -1,0 +1,353 @@
+<Window x:Class="InkFlow.Views.OverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:InkFlow.Controls"
+        Title="墨流浮窗"
+        SizeToContent="WidthAndHeight"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" Opacity="0"
+        ShowInTaskbar="False" ShowActivated="False" Topmost="True" ResizeMode="NoResize"
+        Focusable="False" FontFamily="{StaticResource UiFontFamily}" Foreground="{DynamicResource TextPrimaryBrush}"
+        TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" SnapsToDevicePixels="True">
+
+    <Window.Resources>
+        <Style x:Key="OverlayButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="RootHost" Margin="24">
+        <Grid.LayoutTransform>
+            <ScaleTransform x:Name="ScaleRoot" ScaleX="1" ScaleY="1" />
+        </Grid.LayoutTransform>
+
+        <Border x:Name="ShadowHost" CornerRadius="22" Background="Transparent">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="26" ShadowDepth="7" Direction="270" Opacity="0.42" Color="#000000" />
+            </Border.Effect>
+
+            <Border x:Name="Card" Width="404" CornerRadius="22" Padding="0"
+                    Background="Transparent" BorderThickness="0"
+                    MouseLeftButtonDown="Card_MouseLeftButtonDown"
+                    MouseMove="Card_MouseMove"
+                    MouseLeftButtonUp="Card_MouseLeftButtonUp">
+                <Grid>
+                    <!-- separate layers: the glass background can be transparent
+                         without fading the text, and vice versa -->
+                    <Border x:Name="CardBackground" CornerRadius="22"
+                            Background="{DynamicResource OverlayBackgroundBrush}"
+                            BorderBrush="{DynamicResource OverlayBorderBrush}" BorderThickness="1"
+                            Opacity="{Binding Settings.OverlayBackgroundOpacity}"
+                            IsHitTestVisible="False" />
+
+                    <Grid x:Name="ContentRoot" Margin="17,11,17,12" Opacity="{Binding Settings.OverlayTextOpacity}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- article name centered; only the text itself opens the rename editor; window controls top-right on hover -->
+                        <Grid Grid.Row="0" Margin="0,0,0,3">
+                            <TextBlock Text="{Binding CurrentDocumentName}"
+                                       FontSize="15" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       TextAlignment="Center" TextTrimming="CharacterEllipsis"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Margin="80,0,80,0"
+                                       Cursor="Hand" ToolTip="点击修改浮窗标题"
+                                       Visibility="{Binding ShowOverlayDocumentTitle, Converter={StaticResource BoolToVis}}"
+                                       MouseLeftButtonDown="ArticleTitle_MouseLeftButtonDown" />
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Opacity" Value="0" />
+                                        <Setter Property="IsHitTestVisible" Value="False" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=Card}" Value="True">
+                                                <Setter Property="Opacity" Value="1" />
+                                                <Setter Property="IsHitTestVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Button x:Name="MinimizeButton" Style="{StaticResource OverlayButtonStyle}" Content="&#xE921;"
+                                        ToolTip="最小化为贴边小条" Click="MinimizeButton_Click" />
+                                <Button x:Name="MaximizeButton" Style="{StaticResource OverlayButtonStyle}" Content="&#xE922;"
+                                        ToolTip="展开详情" Click="MaximizeButton_Click" />
+                                <Button x:Name="OverlayCloseButton" Style="{StaticResource OverlayButtonStyle}" Content="&#xE8BB;"
+                                        ToolTip="隐藏浮窗" Click="HideButton_Click" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- status row: badges left, status centered, actions right on hover -->
+                        <Grid Grid.Row="1" Margin="0,0,0,9">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Border Background="{DynamicResource AccentSoftBrush}" CornerRadius="5" Padding="6,2" Margin="0,0,6,0"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding Settings.OverlayClickThrough, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="鼠标穿透" FontSize="8.5" Foreground="{DynamicResource AccentBrush}" />
+                                </Border>
+
+                                <Border Background="{DynamicResource Accent2SoftBrush}" CornerRadius="5" Padding="6,2"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding IsWordTrackingActive, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="Word" FontSize="8.5" FontWeight="SemiBold" Foreground="{DynamicResource Accent2Brush}" />
+                                </Border>
+
+                                <Border Background="{DynamicResource AccentSoftBrush}" CornerRadius="5" Padding="6,2" Margin="6,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding IsPlainTextTrackingActive, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="{Binding PlainTextBadgeText}" FontSize="8.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Grid Width="14" Height="14" Margin="0,0,7,0">
+                                    <Ellipse Width="14" Height="14" Opacity="0.16">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="{DynamicResource StatusRestBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Engine.StatusKind}" Value="writing">
+                                                        <Setter Property="Fill" Value="{DynamicResource StatusWritingBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Engine.StatusKind}" Value="paused">
+                                                        <Setter Property="Fill" Value="{DynamicResource StatusPausedBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <Ellipse x:Name="StatusDot" Width="6" Height="6">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="{DynamicResource StatusRestBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Engine.StatusKind}" Value="writing">
+                                                        <Setter Property="Fill" Value="{DynamicResource StatusWritingBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Engine.StatusKind}" Value="paused">
+                                                        <Setter Property="Fill" Value="{DynamicResource StatusPausedBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                </Grid>
+
+                                <TextBlock Text="{Binding Engine.StatusText}" FontSize="11" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Opacity" Value="0" />
+                                        <Setter Property="IsHitTestVisible" Value="False" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=Card}" Value="True">
+                                                <Setter Property="Opacity" Value="1" />
+                                                <Setter Property="IsHitTestVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+
+                                <Button x:Name="PauseButton" Style="{StaticResource OverlayButtonStyle}" Content="&#xE769;"
+                                        ToolTip="暂停计时" Click="PauseButton_Click" />
+                                <Button x:Name="BreakButtonSmall" Style="{StaticResource OverlayButtonStyle}" ToolTip="休息一下" Click="BreakButton_Click" Margin="2,0">
+                                    <TextBlock Text="休" FontFamily="{StaticResource UiFontFamily}" FontSize="10" />
+                                </Button>
+                                <Button x:Name="LockButton" Style="{StaticResource OverlayButtonStyle}" Content="&#xE785;"
+                                        ToolTip="锁定位置" Click="LockButton_Click" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- metrics -->
+                        <Grid Grid.Row="2" Margin="0,0,0,9">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="1" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="1" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="1" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Engine.SessionWritingSeconds, Converter={StaticResource Clock}}"
+                                           FontFamily="{StaticResource DisplayFontFamily}" FontSize="20" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"
+                                           Typography.NumeralAlignment="Tabular" />
+                                <TextBlock Text="码字" FontSize="9.5" Foreground="{DynamicResource OverlayTextSoftBrush}" Margin="0,3,0,0" HorizontalAlignment="Center" />
+                            </StackPanel>
+
+                            <Border Grid.Column="1" Width="1" Background="{DynamicResource DividerBrush}" Margin="0,5" Opacity="0.8" />
+
+                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Engine.SessionRestSeconds, Converter={StaticResource Clock}}"
+                                           FontFamily="{StaticResource DisplayFontFamily}" FontSize="20" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"
+                                           Typography.NumeralAlignment="Tabular" />
+                                <TextBlock Text="休息" FontSize="9.5" Foreground="{DynamicResource OverlayTextSoftBrush}" Margin="0,3,0,0" HorizontalAlignment="Center" />
+                            </StackPanel>
+
+                            <Border Grid.Column="3" Width="1" Background="{DynamicResource DividerBrush}" Margin="0,5" Opacity="0.8" />
+
+                            <StackPanel Grid.Column="4" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Engine.SessionWords, StringFormat={}{0:N0}}"
+                                           FontFamily="{StaticResource DisplayFontFamily}" FontSize="20" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"
+                                           Typography.NumeralAlignment="Tabular" />
+                                <TextBlock Text="字数" FontSize="9.5" Foreground="{DynamicResource OverlayTextSoftBrush}" Margin="0,3,0,0" HorizontalAlignment="Center" />
+                            </StackPanel>
+
+                            <Border Grid.Column="5" Width="1" Background="{DynamicResource DividerBrush}" Margin="0,5" Opacity="0.8" />
+
+                            <StackPanel Grid.Column="6" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Engine.Speed, StringFormat={}{0:0}}"
+                                               FontFamily="{StaticResource DisplayFontFamily}" FontSize="20" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" Typography.NumeralAlignment="Tabular" />
+                                    <TextBlock Text=" 字/分" FontSize="8.5" Foreground="{DynamicResource TextTertiaryBrush}"
+                                               VerticalAlignment="Bottom" Margin="1,0,0,5" />
+                                </StackPanel>
+                                <TextBlock Text="速率" FontSize="9.5" Foreground="{DynamicResource OverlayTextSoftBrush}" Margin="0,3,0,0" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+
+                    <!-- compact progress -->
+                    <controls:Meter x:Name="CompactProgress" Grid.Row="3" Height="3" Value="{Binding Engine.GoalFraction}"
+                                    TrackBrush="{DynamicResource ProgressTrackBrush}" FillBrush="{DynamicResource AccentGradientBrush}" />
+
+                    <!-- expanded -->
+                    <StackPanel x:Name="ExpandedPanel" Grid.Row="4" Visibility="Collapsed" Margin="0,12,0,0">
+                        <Border Height="1" Background="{DynamicResource DividerBrush}" Margin="0,0,0,11" />
+
+                        <Grid>
+                            <TextBlock Text="今日目标" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            <TextBlock Text="{Binding Engine.GoalPercent, StringFormat={}{0}%}" FontSize="10"
+                                       Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                        </Grid>
+                        <controls:Meter Height="5" Margin="0,7,0,0" Value="{Binding Engine.GoalFraction}"
+                                        TrackBrush="{DynamicResource ProgressTrackBrush}" FillBrush="{DynamicResource AccentGradientBrush}" />
+                        <Grid Margin="0,6,0,0">
+                            <TextBlock Text="{Binding Engine.WordsToday, StringFormat={}今日 {0:N0} 字}" FontSize="9.5" Foreground="{DynamicResource TextTertiaryBrush}" />
+                            <TextBlock Text="{Binding Engine.DailyGoal, StringFormat={}目标 {0:N0} 字}" FontSize="9.5"
+                                       Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Grid Margin="0,13,0,0">
+                            <TextBlock Text="最近节奏" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            <TextBlock Text="{Binding Engine.ContinuousWritingSeconds, Converter={StaticResource Clock}, StringFormat={}连续专注 {0}}"
+                                       FontSize="9.5" Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Right" />
+                        </Grid>
+                        <controls:Sparkline Height="40" Margin="0,6,0,0" Values="{Binding Engine.SpeedHistory}"
+                                            Stroke="{DynamicResource SparkStrokeBrush}" Fill="{DynamicResource SparkFillBrush}" StrokeThickness="1.6" />
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="休息一下" Style="{StaticResource SubtleButtonStyle}" Padding="8,5" FontSize="10.5"
+                                    Click="BreakButton_Click" Margin="0,0,5,0" />
+                            <Button Grid.Column="1" x:Name="PauseButtonLarge" Content="暂停" Style="{StaticResource PrimaryButtonStyle}"
+                                    Padding="8,5" FontSize="10.5" Click="PauseButton_Click" Margin="2,0" />
+                            <Button Grid.Column="2" Content="主界面" Style="{StaticResource SubtleButtonStyle}" Padding="8,5" FontSize="10.5"
+                                    Click="ShowMainButton_Click" Margin="5,0,0,0" />
+                        </Grid>
+
+                        <TextBlock Text="拖动移动 · 双击展开/收起 · Ctrl+Alt+T 鼠标穿透" FontSize="8.5"
+                                   Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- minimized: a slim strip docked to a screen edge -->
+                <Grid x:Name="MinimizedPanel" Height="38" Visibility="Collapsed" Background="Transparent"
+                      Opacity="{Binding Settings.OverlayTextOpacity}">
+                    <Grid Margin="12,0,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse Width="7" Height="7">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource StatusRestBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Engine.StatusKind}" Value="writing">
+                                                <Setter Property="Fill" Value="{DynamicResource StatusWritingBrush}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Engine.StatusKind}" Value="paused">
+                                                <Setter Property="Fill" Value="{DynamicResource StatusPausedBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Text="{Binding Engine.StatusText}" FontSize="9.5"
+                                       Foreground="{DynamicResource OverlayTextSoftBrush}" Margin="6,0,0,0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="1" Text="{Binding CurrentDocumentName}"
+                                   FontSize="12.5" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="10,0" />
+
+                        <Grid Grid.Column="2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Engine.SessionWords, StringFormat={}{0:N0} 字}"
+                                       FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" HorizontalAlignment="Right" Margin="4,0,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=Card}" Value="True">
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Setter Property="IsHitTestVisible" Value="False" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                        VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Opacity" Value="0" />
+                                        <Setter Property="IsHitTestVisible" Value="False" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=Card}" Value="True">
+                                                <Setter Property="Opacity" Value="1" />
+                                                <Setter Property="IsHitTestVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Button x:Name="RestoreButton" Style="{StaticResource OverlayButtonStyle}" Content="&#xE923;"
+                                        ToolTip="还原浮窗" Click="RestoreButton_Click" />
+                                <Button Style="{StaticResource OverlayButtonStyle}" Content="&#xE8BB;"
+                                        ToolTip="隐藏浮窗" Click="HideButton_Click" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

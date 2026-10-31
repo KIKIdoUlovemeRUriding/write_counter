@@ -1,0 +1,110 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ==== Dark palette · "Aurora Ink" ==== -->
+    <SolidColorBrush x:Key="WindowBaseBrush" Color="#0A0C12" />
+    <SolidColorBrush x:Key="WindowEdgeBrush" Color="#1B2230" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#111620" />
+    <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="#171D29" />
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#1B2331" />
+    <SolidColorBrush x:Key="SurfaceActiveBrush" Color="#242E40" />
+    <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="#0C1017" />
+    <SolidColorBrush x:Key="CardBorderBrush" Color="#1F2838" />
+    <SolidColorBrush x:Key="CardBorderSoftBrush" Color="#19202D" />
+    <SolidColorBrush x:Key="DividerBrush" Color="#1C2432" />
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#EDF2FB" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#99A6BD" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#616E85" />
+
+    <SolidColorBrush x:Key="AccentBrush" Color="#8B7CFF" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#252148" />
+    <SolidColorBrush x:Key="AccentBorderBrush" Color="#4D8B7CFF" />
+    <SolidColorBrush x:Key="AccentDimBrush" Color="#2E2A57" />
+    <SolidColorBrush x:Key="Accent2Brush" Color="#3DDCB4" />
+    <SolidColorBrush x:Key="Accent2SoftBrush" Color="#132F2B" />
+    <SolidColorBrush x:Key="GoldBrush" Color="#F2BD6D" />
+    <SolidColorBrush x:Key="GoldSoftBrush" Color="#332818" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#FF7185" />
+    <SolidColorBrush x:Key="DangerSoftBrush" Color="#361B22" />
+    <SolidColorBrush x:Key="DangerHoverBrush" Color="#D63B50" />
+
+    <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#8B7CFF" Offset="0" />
+        <GradientStop Color="#5D8DFF" Offset="0.48" />
+        <GradientStop Color="#3DDCB4" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ButtonGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#9381FF" Offset="0" />
+        <GradientStop Color="#6A5AE8" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="TodayBarBrush" StartPoint="0,1" EndPoint="0,0">
+        <GradientStop Color="#6A5AE8" Offset="0" />
+        <GradientStop Color="#8B7CFF" Offset="0.55" />
+        <GradientStop Color="#55E0BC" Offset="1" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="RingTrackBrush" Color="#1C2534" />
+    <SolidColorBrush x:Key="NavBackgroundBrush" Color="#0E131C" />
+    <SolidColorBrush x:Key="EditorSurfaceBrush" Color="#0D1119" />
+    <SolidColorBrush x:Key="EditorTextBrush" Color="#E6ECF8" />
+    <SolidColorBrush x:Key="PlaceholderBrush" Color="#44506A" />
+    <SolidColorBrush x:Key="SelectionBrush" Color="#8B7CFF" />
+
+    <SolidColorBrush x:Key="SliderTrackBrush" Color="#232B3B" />
+    <SolidColorBrush x:Key="ThumbBrush" Color="#F4F7FF" />
+    <SolidColorBrush x:Key="ThumbBorderBrush" Color="#33202A3D" />
+    <SolidColorBrush x:Key="SwitchTrackOffBrush" Color="#252E3F" />
+    <SolidColorBrush x:Key="SwitchThumbBrush" Color="#E8EDF8" />
+    <SolidColorBrush x:Key="SwitchBorderBrush" Color="#2F3A4E" />
+    <SolidColorBrush x:Key="ProgressTrackBrush" Color="#1D2534" />
+
+    <SolidColorBrush x:Key="ScrollThumbBrush" Color="#3A465C" />
+    <SolidColorBrush x:Key="ScrollThumbHoverBrush" Color="#55637C" />
+
+    <LinearGradientBrush x:Key="OverlayBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#F40F1520" Offset="0" />
+        <GradientStop Color="#F20A0E16" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="OverlayBorderBrush" Color="#30FFFFFF" />
+    <LinearGradientBrush x:Key="OverlaySheenBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#1AFFFFFF" Offset="0" />
+        <GradientStop Color="#00FFFFFF" Offset="1" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="ToastBackgroundBrush" Color="#F3141A26" />
+    <SolidColorBrush x:Key="ToastBorderBrush" Color="#2AFFFFFF" />
+    <SolidColorBrush x:Key="ChartBarBrush" Color="#222B3C" />
+    <SolidColorBrush x:Key="ChartBarTodayBrush" Color="#8B7CFF" />
+    <SolidColorBrush x:Key="TooltipBackgroundBrush" Color="#F5182030" />
+    <SolidColorBrush x:Key="TooltipBorderBrush" Color="#2B3548" />
+
+    <SolidColorBrush x:Key="IconButtonHoverBrush" Color="#1B2331" />
+    <SolidColorBrush x:Key="WindowControlForegroundBrush" Color="#8B97AD" />
+    <SolidColorBrush x:Key="StatusWritingBrush" Color="#3DDCB4" />
+    <SolidColorBrush x:Key="StatusRestBrush" Color="#F2BD6D" />
+    <SolidColorBrush x:Key="StatusPausedBrush" Color="#7E8BA2" />
+    <SolidColorBrush x:Key="OverlayTextSoftBrush" Color="#A2AEC4" />
+
+    <RadialGradientBrush x:Key="GlowVioletBrush" Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="#428B7CFF" Offset="0" />
+        <GradientStop Color="#0A8B7CFF" Offset="0.62" />
+        <GradientStop Color="#008B7CFF" Offset="1" />
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="GlowTealBrush" Center="0.5,0.5" GradientOrigin="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="#2E3DDCB4" Offset="0" />
+        <GradientStop Color="#083DDCB4" Offset="0.6" />
+        <GradientStop Color="#003DDCB4" Offset="1" />
+    </RadialGradientBrush>
+
+    <LinearGradientBrush x:Key="SparkStrokeBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#8B7CFF" Offset="0" />
+        <GradientStop Color="#3DDCB4" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="SparkFillBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#388B7CFF" Offset="0" />
+        <GradientStop Color="#008B7CFF" Offset="1" />
+    </LinearGradientBrush>
+</ResourceDictionary>

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- DPI awareness comes from app.manifest for WPF; silence the WinForms duplicate-setting warning. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+    <AssemblyName>InkFlow</AssemblyName>
+    <RootNamespace>InkFlow</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Product>墨流 · 码字助手</Product>
+    <AssemblyTitle>墨流 · 码字助手</AssemblyTitle>
+    <Description>为写作者打造的码字计时、字数与节奏统计助手</Description>
+    <Company>InkFlow</Company>
+    <Copyright>Copyright © 2026 InkFlow</Copyright>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <LangVersion>latest</LangVersion>
+    <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+</Project>
