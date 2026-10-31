@@ -88,7 +88,7 @@
 ### 从源码运行
 
 ```bash
-git clone git@github.com:KIKIdoUlovemeRUriding/write_counter.git
+git clone https://github.com/KIKIdoUlovemeRUriding/write_counter.git
 cd write_counter
 dotnet build InkFlow.sln -c Debug
 dotnet run --project src/InkFlow/InkFlow.csproj
