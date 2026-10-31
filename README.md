@@ -83,6 +83,8 @@
 
 如果你已经拿到发布好的 `InkFlow.exe`，或本地执行过下面的发布命令，双击 **`启动墨流.cmd`** 即可；仓库本身不提交构建产物，克隆后请从源码运行。
 
+最新单文件版本可从 [GitHub Releases](https://github.com/KIKIdoUlovemeRUriding/write_counter/releases/latest) 下载（Windows 10/11，需要 **.NET 9 Desktop Runtime**）。
+
 需要 Windows 10/11 和 **.NET 9 Desktop Runtime**（从源码构建还需要 .NET 9 SDK）。
 
 ### 从源码运行
