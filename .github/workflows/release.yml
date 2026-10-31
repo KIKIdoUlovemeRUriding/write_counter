@@ -20,7 +20,7 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Publish single-file executable
+      - name: Publish framework-dependent single-file
         shell: pwsh
         run: |
           dotnet publish src/InkFlow/InkFlow.csproj `
@@ -30,9 +30,22 @@ jobs:
             -p:DebugType=None -p:DebugSymbols=false `
             -o publish
 
+      - name: Publish self-contained single-file
+        shell: pwsh
+        run: |
+          dotnet publish src/InkFlow/InkFlow.csproj `
+            -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:DebugType=None -p:DebugSymbols=false `
+            -o publish-selfcontained
+          Move-Item "publish-selfcontained/InkFlow.exe" "publish-selfcontained/InkFlow-selfcontained.exe" -Force
+
       - name: Create GitHub Release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ github.ref_name }}" "publish/InkFlow.exe" --title "InkFlow ${{ github.ref_name }}" --notes "Windows 10/11 单文件构建，需要安装 .NET 9 Desktop Runtime。下载 InkFlow.exe 后直接运行；设置与统计保存在 %AppData%\InkFlow。"
+          $notes = "Windows 10/11 单文件版本。`n- InkFlow-selfcontained.exe：自带 .NET 9 运行时，下载即用，体积较大。`n- InkFlow.exe：框架依赖版，需要安装 .NET 9 Desktop Runtime。`n设置与统计保存在 %AppData%\InkFlow。"
+          gh release create "${{ github.ref_name }}" "publish/InkFlow.exe" "publish-selfcontained/InkFlow-selfcontained.exe" --title "InkFlow ${{ github.ref_name }}" --notes $notes
